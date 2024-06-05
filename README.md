@@ -17,6 +17,12 @@ How can Waze leverage existing data to minimize user churn rate?
 * Ursula Sayo - Operations Manager
 
 ### Business Task
+
+### Key Questions
+1. Who are the users most likely to churn?
+2. Why do user churn?
+3. When do users churn?
+
 ## Analyze
 
 ## Construct
