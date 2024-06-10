@@ -17,6 +17,7 @@ How can Waze leverage existing data to minimize user churn rate?
 * Ursula Sayo - Operations Manager
 
 ### Business Task
+Develop a machine learning model to prevent user churn, improve user retention, and grow Waze's business by===.
 
 ### Key Questions
 1. Who are the users most likely to churn?
