@@ -26,7 +26,7 @@ Develop a machine learning model to prevent user churn, improve user retention, 
 3. When do users churn?
 
 ### Data Source
-The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program. The data set contained 14999 observations for 12 of the 13 columns proided in the data set. One column was missing 700 values, this was the `label` column.
+The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program. The data set contained 14999 observations for 12 of the 13 columns proided in the data set. One column was missing 700 values, this was the `label` column. The data was synthetic and its only purpose was for use with this project.
 #### Data Dictionary
 ![image](https://github.com/user-attachments/assets/e2e0ea5e-6f5f-4ebf-af27-3c14373f4dd6)
 
