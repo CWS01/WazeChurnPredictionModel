@@ -26,7 +26,9 @@ Develop a machine learning model to prevent user churn, improve user retention, 
 3. When do users churn?
 
 ### Data Source
-The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program.
+The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program. The data set contained 14999 observations for 12 of the 13 columns proided in the data set. One column was missing 700 values, this was the `label` column.
+#### Data Dictionary
+* ID
 
 ### Initial Data Inspection (See `Initial_Exploratory_Data_Analysis.ipynb`)
 To begin, it was necessary to get familair with the data. Necessary python packages were imported and the data was imported to a Jupyter Notebook. The data was inspected to see what data was present in the file as well as the format of the data in the different cokumns in the file. One main factor was then inspected at this point of the analysis, this was device type and whether that had a correlation on whether or not a user was more likely to churn. 
@@ -36,6 +38,7 @@ To begin, it was necessary to get familair with the data. Necessary python packa
 Ultimately, it was found that on average there are more iPhone users that were retained as well as more iPhone users that churned. This can likely be attributed to the fact that there were more iPhone users present in the dataset and thus they were more likely to both churn and be retained. Additionally, some more brief EDA showed that churned users tended to have less driving days, but also tended to have more drives and more distance traveled in these days. This provides some initial insight into what a churned users profile may be like. Churned users may be people who are only using the app on a road trip or vacation or a similar event while not needing the app for their everyday life.
 
 ## Analyze
+### Exploratory Data Analysis
 
 
 ## Construct
