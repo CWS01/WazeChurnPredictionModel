@@ -116,4 +116,10 @@ The t-statistic for the test was found to be 1.464 and the p-value was found to 
 
 ## Construct
 
+After the completion of the EDA and statistical testing, the data was ready for modeling. The first type of modeling that explored in this project was regression modeling. As we are interested in whether or not a user churned, a binary variable, the most applicable regression model to apply to the data is a binomial logistic regression.
+
+### Regression Modeling
+
+To begin with the binomial logistic regression, it was necessary to complete some further EDA.
+
 ## Execute
