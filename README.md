@@ -90,10 +90,29 @@ device_type
 Name: drives, dtype: float64
 ```
 
-iPhone users tended to have more drives on average but as the difference can be seen to be small, the difference may arise from random sampling and not a true difference between the two samples. To test whether this is a true difference between the samples, it is necessary to perform a two-sample t-test. In this case the null and alternative hypotheses are the following:
-$H_0$: There is no difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+iPhone users tended to have more drives on average but as the difference can be seen to be small, the difference may arise from random sampling and not a true difference between the means of the two samples. To test whether this is a true difference between the mean of the two samples, it is necessary to perform a two-sample t-test. In this case the null and alternative hypotheses are the following:
 
-$H_A$: There is a difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+  $H_0$: There is no difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+
+  $H_A$: There is a difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+
+The significance level chosen for the test is 5%. The t-test was performed using the `Scipy stats` package in Python, to perform the test the variances of the two samples were assumed to be unequal.
+
+```
+# 1. Isolate the `drives` column for iPhone users.
+iphone_drives = df[df['device_type']==1]['drives']
+
+# 2. Isolate the `drives` column for Android users.
+android_drives = df[df['device_type']==2]['drives']
+
+# 3. Perform the t-test
+stats.ttest_ind(a=iphone_drives, b=android_drives, equal_var=False)
+```
+```
+Ttest_indResult(statistic=1.4635232068852353, pvalue=0.1433519726802059)
+```
+
+The t-statistic for the test was found to be 1.464 and the p-value was found to be 0.143. Since the p-value (0.143) is greater than our significance level (0.05 or 5%), the null hypothesis should fail to be rejected. There is not a statistically significant difference between the average drives completed by iPhone users and the average drives completed by Android users.
 
 ## Construct
 
