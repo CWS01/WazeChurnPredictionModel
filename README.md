@@ -28,7 +28,8 @@ Develop a machine learning model to prevent user churn, improve user retention, 
 ### Data Source
 The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program. The data set contained 14999 observations for 12 of the 13 columns proided in the data set. One column was missing 700 values, this was the `label` column.
 #### Data Dictionary
-* ID
+![image](https://github.com/user-attachments/assets/e2e0ea5e-6f5f-4ebf-af27-3c14373f4dd6)
+
 
 ### Initial Data Inspection (See `Initial_Exploratory_Data_Analysis.ipynb`)
 To begin, it was necessary to get familair with the data. Necessary python packages were imported and the data was imported to a Jupyter Notebook. The data was inspected to see what data was present in the file as well as the format of the data in the different cokumns in the file. One main factor was then inspected at this point of the analysis, this was device type and whether that had a correlation on whether or not a user was more likely to churn. 
