@@ -65,6 +65,36 @@ All of this EDA work allowed for the early determination of which variables may 
 ### Statistical Testing (See `Data_Exploration_and_Hypothesis_Testing`)
 As mentioned in the key questions section above, one area of interest was to determine if there was a relationship between mean amount of rides and device type, specifically a statistical analysis. As there are two samples in this dataset, mean amount of rides by iPhone users and mean amount of rides by Android users, and due to the fact that population statistics are not available, a two-sample t-test is the most appropriate statistical test to determine if there is a difference between the two samples.
 
+To perform the analysis it was first necessary to transform the categorical variable device (iPhone or Android) to an integer using label encoding. The following code block demonstrates how the label encoding was done in Python:
+
+```
+# 1. Create `map_dictionary`
+map_dictionary = {'iPhone': 1, 'Android': 2}
+
+# 2. Create new `device_type` column
+df['device_type'] = df['device'].map(map_dictionary)
+
+# 3. Map the new column to the dictionary
+df['device_type']
+```
+
+Thus, all iPhone users were assigned the integer 1, while all Android users were assigned the integer 2. The mean for each group was then found using the following code:
+
+```
+df.groupby('device_type')['drives'].mean()
+```
+```
+device_type
+1    67.859078
+2    66.231838
+Name: drives, dtype: float64
+```
+
+iPhone users tended to have more drives on average but as the difference can be seen to be small, the difference may arise from random sampling and not a true difference between the two samples. To test whether this is a true difference between the samples, it is necessary to perform a two-sample t-test. In this case the null and alternative hypotheses are the following:
+$H_0$: There is no difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+
+$H_A$: There is a difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
+
 ## Construct
 
 ## Execute
