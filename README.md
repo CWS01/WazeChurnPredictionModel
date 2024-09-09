@@ -96,7 +96,7 @@ iPhone users tended to have more drives on average but as the difference can be 
 
   $H_A$: There is a difference in the average number of drives between drivers who use iPhone devices and drivers who use Android devices.
 
-The significance level chosen for the test is 5%. The t-test was performed using the `Scipy stats` package in Python, to perform the test the variances of the two samples were assumed to be unequal.
+The significance level chosen for the test is 5%. The t-test was performed using the `stats` module from the `Scipy` package in Python, to perform the test the variances of the two samples were assumed to be unequal.
 
 ```
 # 1. Isolate the `drives` column for iPhone users.
