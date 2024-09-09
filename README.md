@@ -40,7 +40,25 @@ Ultimately, it was found that on average there are more iPhone users that were r
 
 ## Analyze
 ### Exploratory Data Analysis
+After an initial screening of the data was complete, it was necessary to do a more in depth screening of the variables that were provided as part of the data set. This in depth screening is referred to as Exploratory Data Analysis (EDA) and involves the following components (if necessary): discovery, structuring, cleaning, joining, validating, and presenting. The main focus of the EDA completed as a part of this project was the creation of visualizations which explained the distribution of variables or the relationship between a pair of variables. Some of the visualizations will be shown below, but due to the plethora of existing visualizations, not all will be shown, please refer to the ipynb file referenced to see all the visualizations.
 
+![image](https://github.com/user-attachments/assets/09f034bd-e907-4006-84d4-66b1edfe8e03)
+
+In the above visualization, the percentage of churned users and retained users is looked at as a function of the number of days the user spent driving in the last month. What can be seen in is that the more days a user spends using the app the less likely they are to churn (40% churn rate with 0 driving days, ~17% churn rate with 15 driving days, and a 0% churn rate with 30 driving days). 
+
+![image](https://github.com/user-attachments/assets/7edf09c4-d9fe-43ff-8d2e-b19980328ba9)
+
+As alluded to earlier, there does not appear to be a discrepancy between device types for whether or not users churn. For both Androids and iPhones there appeared to be about 1 user who churned for every 4 users who were retained.
+
+Additional work was done to create new variables that could be used later for additional analysis.
+
+  ```
+    # 1. Create `km_per_driving_day` column
+    df['km_per_driving_day'] = df['driven_km_drives']/df['driving_days']
+
+    # 2. Call `describe()` on the new column
+    df['km_per_driving_day'].describe()
+```
 
 ## Construct
 
