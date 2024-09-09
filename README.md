@@ -18,7 +18,7 @@ Waze’s free navigation app makes it easier for drivers around the world to get
 * Ursula Sayo - Operations Manager
 
 ### Business Task
-Develop a machine learning model to prevent user churn, improve user retention, and grow Waze's business by===.
+Develop a machine learning model to prevent user churn, improve user retention, and grow Waze's business by allowing Waze to implement interventions for users at risk for churning.
 
 ### Key Questions
 1. Who are the users most likely to churn?
