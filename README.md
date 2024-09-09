@@ -24,6 +24,7 @@ Develop a machine learning model to prevent user churn, improve user retention, 
 1. Who are the users most likely to churn?
 2. Why do user churn?
 3. When do users churn?
+4. Is there a relationship between mean amount of rides and device type?
 
 ### Data Source
 The data for this project was provided as part of the Google Advanced Data Analytics Certificate Program. The data set contained 14999 observations for 12 of the 13 columns proided in the data set. One column was missing 700 values, this was the `label` column. The data was synthetic and its only purpose was for use with this project.
@@ -60,6 +61,9 @@ Additional work was done to create new variables that could be used later for ad
     df['km_per_driving_day'].describe()
 ```
 All of this EDA work allowed for the early determination of which variables may be best suited for modeling, while eliminating others. For example, there was a relationship shown between the number of users who churned and how many days they spent using the app within a month, but it was also shown that a users device type likely does not have an influence on whether or not a user churns. Addiitonally, the EDA work allowed for the identification and removal of outliers.
+
+### Statistical Testing (See `Data_Exploration_and_Hypothesis_Testing`)
+As mentioned in the key questions section above, one area of interest was to determine if there was a relationship between mean amount of rides and device type, specifically a statistical analysis. As there are two samples in this dataset, mean amount of rides by iPhone users and mean amount of rides by Android users, and due to the fact that population statistics are not available, a two-sample t-test is the most appropriate statistical test to determine if there is a difference between the two samples.
 
 ## Construct
 
