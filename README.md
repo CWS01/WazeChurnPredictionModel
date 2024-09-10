@@ -292,13 +292,30 @@ training_probabilities = model.predict_proba(X_train)
 training_probabilities
 ```
 Next, we will find the logit of the probability data using the following formula, reminder the relationship of the logit of the probability values should be linear with the predictor varaible:
-```
 <br>
-$$
 logit(p) = ln(\frac{p}{1-p})
-$$
 <br>
+
 ```
+# 1. Copy the `X_train` dataframe and assign to `logit_data`
+
+logit_data = X_train.copy()
+
+# 2. Create a new `logit` column in the `logit_data` df
+
+logit_data['logit'] = [np.log(prob[1]/prob[0]) for prob in training_probabilities]
+```
+Now that we have the logit data, we can create a regplot to see if the relation between a single predictor variable and log-odds of the predicted probabilities is linear (Note: we are only doing this for one predictor variable when in reality it should be done for all predictor variables).
+
+```
+# Plot regplot of `activity_days` log-odds
+sns.regplot(x = "activity_days", y = "logit", data = logit_data, scatter_kws={'s':2, 'alpha': 0.5})
+plt.title('Log-odds vs. Activity Days')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/8bde8991-c4d6-4551-a84b-1fbdfaf4cbd7)
+
+Here we can see that a linear relationship does in fact exist, validating the final assumption of the model. The model has now been created, the final step is to interpret the model results (See Regression Modeling Results).
 
 
 ## Execute
