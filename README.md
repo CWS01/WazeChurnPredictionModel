@@ -231,9 +231,9 @@ sns.heatmap(df.corr(method='pearson'), vmin=-1, vmax=1, annot=True, cmap='coolwa
 plt.title("Correlation heatmap", fontsize = 18)
 plt.show()
 ```
-```
+
 ![image](https://github.com/user-attachments/assets/9252d45b-747b-4686-8197-abcc81b2e04b)
-```
+
 
 
 
