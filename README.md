@@ -321,5 +321,53 @@ Here we can see that a linear relationship does in fact exist, validating the fi
 ## Execute
 
 ### Regression Modeling Results
+To evaluate the performance of the binomial logistic regression model, predictions will be made on `X_test` data generated earlier.
+
+```
+# Generate predictions on X_test
+y_pred = model.predict(X_test)
+```
+
+The accuracy of the model is then scrutinized.
+
+```
+# Score the model (accuracy) on the test data
+model.score(X_test, y_test)
+```
+```
+0.8237762237762237
+```
+The model was found to have an accuracy of 82.4%, indicating that the model performs pretty well overall in classifying churned and retained users but there is further analysis that must be completed. To gain a better understanding of how the model is predicting a confusion matrix will be created and displayed.
+
+```
+cm = metrics.confusion_matrix(y_test, y_pred, labels=model.classes_)
+```
+```
+disp = metrics.ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=model.classes_)
+
+disp.plot()
+```
+
+![image](https://github.com/user-attachments/assets/0dfaf17b-2566-43cc-8d2d-a90709124c7d)
+
+Here we can see that the model has a lot of False negatives compared with false positives. This means that the model is more likely to say a user was retained when in fact the user churned. This is likely not ideal for a model that is interested in predicting whether a user will churn or not. The precision and recall scors of the model will now be scrutinized. Based on the high number of false negatives, it is likely that a lower recall score than precision score will be seen.
+
+```
+# Calculate precision manually
+precision = cm[1,1] / (cm[0, 1] + cm[1, 1])
+precision
+```
+```
+0.5178571428571429
+```
+```
+# Calculate recall manually
+recall = cm[1,1] / (cm[1, 0] + cm[1, 1])
+recall
+```
+```
+0.0914826498422713
+```
+The model was in fact found to have a much higher precision score (0.52) than a recall score (0.09) meaning that the model makes a lot of false negative predictions and fails to capture users who will churn.
 
 ### Other Modeling Results
