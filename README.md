@@ -292,9 +292,13 @@ training_probabilities = model.predict_proba(X_train)
 training_probabilities
 ```
 Next, we will find the logit of the probability data using the following formula, reminder the relationship of the logit of the probability values should be linear with the predictor varaible:
+```
 <br>
+$$
 logit(p) = ln(\frac{p}{1-p})
+$$
 <br>
+```
 
 
 ## Execute
