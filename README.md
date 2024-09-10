@@ -120,6 +120,90 @@ After the completion of the EDA and statistical testing, the data was ready for 
 
 ### Regression Modeling
 
-To begin with the binomial logistic regression, it was necessary to complete some further EDA.
+The target variable in this case was the varibale labeled `label` in the dataset. This is the variable which stated whether or not a user churned. All other variables, apart from `ID` were assumed to be able to be used as predictor variables. To begin with the binomial logistic regression, it was necessary to complete some further EDA. After the ID column had been dropped from the dataset, it was necessary to check the class balance of the target variable.
+
+```
+df['label'].value_counts(normalize=True)
+```
+```
+retained    0.822645
+churned     0.177355
+Name: label, dtype: float64
+```
+
+Here it can be seen that there is approximately an 80/20 split in the target variable, thus, when creating the training and testing data it will be necessary to stratify the data on the target variable to ensure the class balance is maintained. All the variables were then looked at and assessed for outliers. The following columns were found to have outliers: `sessions`, `drives`, `total_sessions`, `total_navigations_fav_1`, `total_navigations_fav2`, `driven_km_drives`, and `duration_minutes_drives.` The outliers in these columns were imputed by setting all values that exceeded the 95th quantile of the column equal to that 95th quantile value.
+
+```
+# Impute outliers
+for column in ['sessions', 'drives', 'total_sessions', 'total_navigations_fav1', 'total_navigations_fav2', 'driven_km_drives', 'duration_minutes_drives']:
+    threshold = df[column].quantile(0.95)
+    df.loc[df[column] > threshold, column] = threshold
+```
+
+There will be two variables created for this analysis. The first variable is `km_per_driving_day` which was discussed above. This variable was shown to correlate with churn rate as shown during the earlier EDA.
+
+```
+# 1. Create `km_per_driving_day` column
+df['km_per_driving_day'] = df['driven_km_drives']/df['driving_days']
+
+# 2. Call `describe()` on the new column
+df['km_per_driving_day'].describe()
+```
+```
+count    1.499900e+04
+mean              inf
+std               NaN
+min      3.022063e+00
+25%      1.672804e+02
+50%      3.231459e+02
+75%      7.579257e+02
+max               inf
+Name: km_per_driving_day, dtype: float64
+```
+
+Here it can be seen that there are infinite values that exist in the newly formed column, to deal with this, all infinity values were set to 0.
+
+```
+# 1. Convert infinite values to zero
+df.loc[df['km_per_driving_day'] == np.inf, 'km_per_driving_day'] = 0
+
+# 2. Confirm that it worked
+df['km_per_driving_day'].describe()
+```
+```
+count    14999.000000
+mean       578.963113
+std       1030.094384
+min          0.000000
+25%        136.238895
+50%        272.889272
+75%        558.686918
+max      15420.234110
+Name: km_per_driving_day, dtype: float64
+```
+The replacement of the inifinty values with 0 fixed the distrubution of the data in the column. The second variable that was created was a `professional_driver` variable. This variable was defined as users who had 60 or more drives in the last month and drove on 15 or more days. The goal here is to separate individuals who might be completing drives for work related reasons from individuals who are completing drives casually.
+
+```
+# Create `professional_driver` column
+df['professional_driver'] = np.where((df['drives'] > 59) & (df['driving_days'] > 14), 1, 0)
+```
+```
+# 1. Check count of professionals and non-professionals
+print(df['professional_driver'].value_counts())
+
+# 2. Check in-class churn rate
+print(df.groupby(['professional_driver'])['label'].value_counts(normalize=True))
+```
+```
+0    12405
+1     2594
+Name: professional_driver, dtype: int64
+professional_driver  label   
+0                    retained    0.801202
+                     churned     0.198798
+1                    retained    0.924437
+                     churned     0.075563
+Name: label, dtype: float64
+```
 
 ## Execute
