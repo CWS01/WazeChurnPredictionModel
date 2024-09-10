@@ -120,6 +120,7 @@ After the completion of the EDA and statistical testing, the data was ready for 
 
 ### Regression Modeling
 
+#### Model Preparation
 The target variable in this case was the varibale labeled `label` in the dataset. This is the variable which stated whether or not a user churned. All other variables, apart from `ID` were assumed to be able to be used as predictor variables. To begin with the binomial logistic regression, it was necessary to complete some further EDA. After the ID column had been dropped from the dataset, it was necessary to check the class balance of the target variable.
 
 ```
@@ -234,7 +235,72 @@ plt.show()
 
 ![image](https://github.com/user-attachments/assets/9252d45b-747b-4686-8197-abcc81b2e04b)
 
+Using 0.7 as the multicollinearity threshold shows that `sessions` and `drives` are multicolliear as well as `driving_days` and `activity_days.` The variables `drives` and `activity_days` can be observed to have slightly stronger correlations with the target variable compared with the other variables, thus, `sessions` and `driving_days` will be dropped from the analysis. The final task to complete before modeling is to create dummy variables for any categorical predictor variables. There is only one categorical predictor variable, `device`, which was already shown to likely not have an effect on the predictor variable but will be withheld for the robustness of analysis.
 
+```
+# Create new `device2` variable
+df['device2'] = np.where(df['device'] == 'iPhone', 1, 0)
+df[['device', 'device2']].tail()
+```
+
+iPhone users were set equal to 1, while Android users were set equal to 0.
+
+#### Model Construction
+
+To begin with model construction, we first isolate our predictor and target variables.
+
+```
+# Isolate predictor variables
+X = df.drop(columns = ['label', 'label2', 'device', 'sessions', 'driving_days'])
+```
+```
+# Isolate target variable
+y = df['label2']
+```
+
+Next, we will split the data into training and testing sets, as mentioned earlier, there is a class imbalance that exists in the target variable and thus it it necessary to set the parameter `stratify` equal to y to maintain the class balance.
+
+```
+# Perform the train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
+```
+Now that thjis is complete, the model is ready to be created and fitted using the training data. Since the predictor variables are unscaled, it is necessary to set the `penalty` parameter to none.
+
+```
+model = LogisticRegression(penalty='none', max_iter=400)
+
+model.fit(X_train, y_train)
+```
+The coefficients of the model were found to be the following:
+
+```
+array([[ 1.91336945e-03,  3.27070888e-04, -4.06477637e-04,
+         1.23175474e-03,  9.31478651e-04, -1.48604534e-05,
+         1.09093436e-04, -1.06031965e-01,  1.82230940e-05,
+        -1.52850416e-03, -1.04121752e-03]])
+```
+The intercept was found to the following:
+
+```
+array([-0.00170675])
+```
+The next step is to circle back and check the final logistic regression assumption. To do this, we must first create a variable which outlines the probability of response for each sample in the training data, meaning the probabiliy that each user has for churning.
+
+```
+# Get the predicted probabilities of the training data
+training_probabilities = model.predict_proba(X_train)
+training_probabilities
+```
+Next, we will find the logit of the probability data using the following formula, reminder the relationship of the logit of the probability values should be linear with the predictor varaible:
+<br>
+$$
+logit(p) = ln(\frac{p}{1-p})
+$$
+<br>
 
 
 ## Execute
+
+### Regression Modeling Results
+
+### Other Modeling Results
