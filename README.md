@@ -205,5 +205,36 @@ professional_driver  label
                      churned     0.075563
 Name: label, dtype: float64
 ```
+Here we can see that the churn rate for professional drivers (7.6%) is lower than the churn rate for non-professional drivers (19.9%) indicative of a potential predictive signal. The next step for creating the binomial logistic regression model is to encode the categorical variables, specifically the `label` variable. To do this, we will set all churned users equal to 1 and all reatined users equal to 0.
+
+```
+# Create binary `label2` column
+df['label2'] = np.where(df['label'] == 'churned', 1, 0)
+df[['label', 'label2']].tail()
+```
+This allows the variable to be used for modeling. The final step before creating the model was to check all model assumptions. As a reminder these are the assumptions in place for a logistic regression model:
+* Independent Observations
+* No extreme outliers
+* Little to no multicollinearity among X predictors
+* Linear relationship between X and the logit of y
+
+For this project, all observations are assumed to be independent. Extreme outliers have already been dealt with. Whether or not there is a linear relationship between X and the logit of y will be explored and verified after the model has been created. Thus, the remaining assumption to verify is little to no multicollinearity among X predictors. To do this, a correlation matrix will first be genmerated and a correlation heatmap will be plotted.
+
+```
+# Generate a correlation matrix
+df.corr(method='pearson')
+```
+```
+# Plot correlation heatmap
+plt.figure(figsize=(15,10))
+sns.heatmap(df.corr(method='pearson'), vmin=-1, vmax=1, annot=True, cmap='coolwarm')
+plt.title("Correlation heatmap", fontsize = 18)
+plt.show()
+```
+```
+![image](https://github.com/user-attachments/assets/9252d45b-747b-4686-8197-abcc81b2e04b)
+```
+
+
 
 ## Execute
