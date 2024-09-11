@@ -598,14 +598,14 @@ disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                              display_labels=['retained', 'churned'])
 disp.plot();
 ```
-<Figure size 640x480 with 2 Axes>
+![image](https://github.com/user-attachments/assets/ddb75a99-eb31-452e-90c7-717c3357dfe5)
 
 Unfortunately, the model was seen to predict around 5x the amount of false negatives than it predicted false positives. AAdditionally, the model only correctly identified 13% of users who actually churned. The final area of interest is the importance of the different features that were used for modeling.
 
 ```
 plot_importance(xgb_cv.best_estimator_)
 ```
-<Figure size 640x480 with 1 Axes>
+![image](https://github.com/user-attachments/assets/10ac33c1-87aa-4dc1-83f5-b85e201a6f83)
 
 For this model, `km_per_hour` and `n_days_after_onboarding` were seen to have the highest weight in the model. Notice that 5 of the 8 top features were engineered features which shows the importance of creating new features to boost model performance.
 
