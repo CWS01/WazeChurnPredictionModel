@@ -1,4 +1,4 @@
-# WazeChurnPredictionModel
+# Waze Churn Prediction Model
 How can Waze leverage existing data to minimize user churn rate?
 
 ## Plan
