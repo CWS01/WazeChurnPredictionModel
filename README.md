@@ -317,6 +317,117 @@ plt.show()
 
 Here we can see that a linear relationship does in fact exist, validating the final assumption of the model. The model has now been created, the final step is to interpret the model results (See Regression Modeling Results).
 
+### Random Forest and XGBoost Modeling
+
+Due to the poor recall performance of the binomial logistic regression model, it was necessary to explore other machine learning models to see if performance cvould be improved. Specifically, the two additional machine learning models that were explored in this project were a random forest model and an XGBoost model. To begin with this modeling many of the same steps that were completed for the logistic regression model were done including the introduction of the `km_per_driving_day` variable and the `professional_driver` variable. Additional variable were introduced, 'total_sessions_per_day`, `km_per_hour`, `km_per_drive`, and `percent_of_sessions_to_favorite.`
+
+```
+# Create `total_sessions_per_day` feature
+df['total_sessions_per_day'] = df['total_sessions']/df['n_days_after_onboarding']
+```
+```
+# Create `km_per_hour` feature
+df['km_per_hour'] = df['driven_km_drives'] / (df['duration_minutes_drives'] / 60)
+df['km_per_hour'].describe()
+```
+```
+# Create `km_per_drive` feature
+df['km_per_drive'] = df['driven_km_drives']/df['drives']
+df['km_per_drive'].describe()
+```
+```
+# Create `percent_of_sessions_to_favorite` feature
+df['percent_of_sessions_to_favorite'] = (df['total_navigations_fav1'] + df['total_navigations_fav2'])/df['total_sessions']
+
+# Get descriptive stats
+df['percent_of_sessions_to_favorite'].describe()
+```
+One note is that the km_per_drive` feature saw infinite values, these values were imputed to 0 using the same method described in the above section. The device feature was again encoded, where Android was equal to 0 and iPhone was equal to 1. Addtionally, the target variable was encoded, where retained was equal to 0 and churned was equal to 1. Since tree-based models can handle multicollinearity, only the `ID` variable was dropped as a predictor variable. 
+
+```
+# Drop `ID` column
+df = df.drop('ID', axis=1)
+```
+Before beginning to construct the model(s), it is necessary to determine which performance metric will be used for evaluation. Due to the class imbalance present in the data, ~82% of users are retained and ~18% of users churn, and the fact that there is little consequence for a false positive in this case, the most appropraite metric to use is recall score. The recall score is most appropriately used when the cost of a false negative is high, which in this case would be labeling a user as being reatined when in reality they are likely to churn. Now that the performance metric has been identified, it is time to split the data. For this modeling procedure data will be split into training, testing, and validation datasets.
+
+```
+# 1. Isolate X variables
+X = df.copy()
+X = X.drop(['label', 'label2', 'device'], axis=1)
+
+# 2. Isolate y variable
+y = df['label2']
+
+# 3. Split into train and test sets
+X_tr, X_test, y_tr, y_test = train_test_split(X, y, test_size=0.20, stratify=y, random_state=0)
+
+# 4. Split into train and validate sets
+X_train, X_val, y_train, y_val = train_test_split(X_tr, y_tr, test_size=0.25, stratify=y_tr, random_state=0)
+```
+The training set will be used to fit and tune the hyperparameters of the model(s), final model selection will be completed using the validation set, and an assessment of this final models performance will be completed using the testing set. The first model that will be created will be a random forest model.
+
+#### Random Forest Model
+
+To begin with the random forest model, we will use GridSearchCV to test different hyperparameters for this model. Due to limitations in my laptops computing ability, only one set of hyperparameters will be tested for the model. The hyperparameters to be tested are `max_depth`, `min_samples_leaf`, `min_samples_split`, `max_features`, `max_samples`, and `n_estimators`. The values used for each can be seen in the following code block.
+
+```
+# 1. Instantiate the random forest classifier
+rf = RandomForestClassifier(random_state=0)
+
+# 2. Create a dictionary of hyperparameters to tune
+cv_params = {
+    'max_depth': [None],
+    'min_samples_leaf': [2],
+    'min_samples_split': [2],
+    'max_features': [1.0],
+    'max_samples': [1.0],
+    'n_estimators': [300]
+}
+
+# 3. Define a dictionary of scoring metrics to capture
+scoring = {'accuracy', 'precision', 'recall', 'f1'}
+
+# 4. Instantiate the GridSearchCV object
+rf_cv = GridSearchCV(rf, cv_params, scoring=scoring, cv=5, refit='recall')
+```
+
+Note that the `cv` parameter refers to how many cross-validation folds are desired, in this case 5, and the `refit` parameter refers to which evaluation metric you would lit to use to select the model, in this case recall. The model was then fitted to the training data.
+
+```
+%%time
+rf_cv.fit(X_train, y_train)
+```
+This completes the construction of the random forest model. To see the results of the model, refer to the section "Random Forest Model Results" below.
+
+#### XGBoost Model
+
+To begin with the xgboost model, we will use GridSearchCV to test different hyperparameters for this model. Due to limitations in my laptops computing ability, again only one set of hyperparameters will be tested for the model. The hyperparameters to be tested are `max_depth`, `min_child_weight`, `learning_rate`, and `n_estimators`. The values used for each can be seen in the following code block.
+
+```
+# 1. Instantiate the XGBoost classifier
+xgb = XGBClassifier(objective='binary:logistic', random_state=0)
+
+# 2. Create a dictionary of hyperparameters to tune
+cv_params = {
+    'max_depth': [12],
+    'min_child_weight': [3],
+    'learning_rate': [0.1],
+    'n_estimators': [75]
+}
+
+# 3. Define a dictionary of scoring metrics to capture
+scoring = {'accuracy', 'precision', 'recall', 'f1'}
+
+# 4. Instantiate the GridSearchCV object
+xgb_cv = GridSearchCV(xgb, cv_params, scoring=scoring, cv=5, refit='recall')
+```
+Note that the `cv` parameter refers to how many cross-validation folds are desired, in this case 5, and the `refit` parameter refers to which evaluation metric you would lit to use to select the model, in this case recall. The model was then fitted to the training data.
+
+```
+%%time
+xgb_cv.fit(X_train, y_train)
+```
+This completes the construction of the xgboost model. To see the results of the model, refer to the section "XGBoost Model Results" below.
 
 ## Execute
 
@@ -370,4 +481,140 @@ recall
 ```
 The model was in fact found to have a much higher precision score (0.52) than a recall score (0.09) meaning that the model makes a lot of false negative predictions and fails to capture users who will churn.
 
-### Other Modeling Results
+### Random Forest Model Results
+
+As mentioned earlier, the random forest model was selected using GridSearchCV and using the recall score as the evaluation metric for model selection. Thus, the best score was then determined, remember only one set of parameters was used so only one score was achieved.
+
+```
+# Examine best score
+rf_cv.best_score_
+```
+```
+0.11499137187230371
+```
+
+Here we can see the recall score of this random forest model is 0.11, better than the 0.09 seen for the binomial logistic regression model but still leaving much to be desired. A full table with the F1 score, recall score, precision score, and accuracy score is shown below.
+
+```
+   Model        F1    Recall  Precision  Accuracy
+0  RF CV  0.184852  0.114991   0.472771  0.820142
+```
+Overall, this model does not appear to perform exceptionally better than the binomial logistic regression model, but this is likely due to the fact that only one set of hyperparameters was tested due to computing limitations.
+
+### XGBoost Model Results
+
+As mentioned earlier, the xgboost model was selected using GridSearchCV and using the recall score as the evaluation metric for model selection. Thus, the best score was then determined, remember only one set of parameters was used so only one score was achieved.
+
+```
+# Examine best score
+xgb_cv.best_score_
+```
+```
+0.14062553925798102
+```
+Here we can see that the recall score has again improved, moving from 0.09 for the binomial logistic regression model to 0.11 for the random forest model and now to 0.14 for the xgboost model. Comparing the two models we see the following
+
+```
+    Model        F1    Recall  Precision  Accuracy
+0   RF CV  0.184852  0.114991   0.472771  0.820142
+0  XGB CV  0.210685  0.140626   0.421795  0.813381
+```
+Here we can see that the xgboost model had a better f1 score and recall score when compared with the decision tree model but had lower precision and accuracy scores. As we are interested in recall in this case, and the punishment for a false positive has already been deemed to be low, the xgboost model can be considered to perform better on this dataset. With that being said, it is important to note that 0.14 is not a high recall score and overall this model does not perform excpetionally well.
+
+### Model Selection
+
+The final steo is to select the champion model, this is done using the validation datasets created earlier to see how the model performs on novel data. Here we use the best estimator found from the random forest model to predict on the validation data (reminder only one estimator was created).
+
+```
+# Use random forest model to predict on validation data
+rf_preds = rf_cv.best_estimator_.predict(X_val)
+```
+The evaluation scores were then found for the random forest validation (to see the `get_test_scores` function refer to the appendix.
+
+```
+# Get validation scores for RF model
+rf_val_scores = get_test_scores('RF Val', rf_preds, y_val)
+
+# Append to the results table
+results = pd.concat([results, rf_val_scores], axis=0)
+results
+```
+```
+    Model        F1    Recall  Precision  Accuracy
+0   RF CV  0.184852  0.114991   0.472771  0.820142
+0  XGB CV  0.210685  0.140626   0.421795  0.813381
+0  RF Val  0.192616  0.118343   0.517241  0.824126
+```
+In this case, not much difference is seen between the cross-validation of the random forest model and the later validation meaning that the model did not overfit the data. If the model had overfit the data, we would expect to see worse scores across the board for the validation data. This same process was then repeated for the xgboost model.
+
+```
+# Use XGBoost model to predict on validation data
+xgb_preds = xgb_cv.best_estimator_.predict(X_val)
+
+# Get validation scores for XGBoost model
+xgb_val_scores = get_test_scores('XGB Val', xgb_preds, y_val)
+
+# Append to the results table
+results = pd.concat([results, xgb_val_scores], axis=0)
+results
+```
+```
+     Model        F1    Recall  Precision  Accuracy
+0    RF CV  0.184852  0.114991   0.472771  0.820142
+0   XGB CV  0.210685  0.140626   0.421795  0.813381
+0   RF Val  0.192616  0.118343   0.517241  0.824126
+0  XGB Val  0.220566  0.145957   0.451220  0.817133
+```
+We see that, like the random forest model, the xgboost model performed marginally better on the validation dataset meaning that the model did not overfit the data and due to the higher recall score, this model will be selected as the champion model. The final step is to evaluate the model against the test dataset created earlier.
+
+```
+# Use XGBoost model to predict on test data
+xgb_test_preds = xgb_cv.best_estimator_.predict(X_test)
+
+# Get test scores for XGBoost model
+xgb_test_scores = get_test_scores('XGB Test', xgb_test_preds, y_test)
+
+# Append to the results table
+results = pd.concat([results, xgb_test_scores], axis=0)
+results
+```
+```
+      Model        F1    Recall  Precision  Accuracy
+0     RF CV  0.184852  0.114991   0.472771  0.820142
+0    XGB CV  0.210685  0.140626   0.421795  0.813381
+0    RF Val  0.192616  0.118343   0.517241  0.824126
+0   XGB Val  0.220566  0.145957   0.451220  0.817133
+0   XGB Val  0.198496  0.130178   0.417722  0.813636
+0  XGB Test  0.198496  0.130178   0.417722  0.813636
+```
+The scores were seen to drop slightly from both the cross-validation and the later validation when predicting on the test dataset but the scores are still within an acceptable range for the discrepancy seen between validation and test scores. The model will now be used to create a confusion matrix based on the test data.
+
+```
+# Generate array of values for confusion matrix
+cm = confusion_matrix(y_test, xgb_test_preds, labels=xgb_cv.classes_)
+
+# Plot confusion matrix
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                             display_labels=['retained', 'churned'])
+disp.plot();
+```
+<Figure size 640x480 with 2 Axes>
+
+Unfortunately, the model was seen to predict around 5x the amount of false negatives than it predicted false positives. AAdditionally, the model only correctly identified 13% of users who actually churned. The final area of interest is the importance of the different features that were used for modeling.
+
+```
+plot_importance(xgb_cv.best_estimator_)
+```
+<Figure size 640x480 with 1 Axes>
+
+For this model, `km_per_hour` and `n_days_after_onboarding` were seen to have the highest weight in the model. Notice that 5 of the 8 top features were engineered features which shows the importance of creating new features to boost model performance.
+
+## Conclusion
+
+The main conclusion to take away from the development of the champion xgboost model is the model was shown to demonstrate a low overall recall score. This means that the model should probably be avoided for any major business decisions but can be utilized for further data exploration. The model was shown to only correctly predict 13% of users who actually churn from the Waze app, thus the model is not likely to correctly predict a significant amount of churned users. Lets explore some benefits of each model that was used throughout this project:
+* Binomial Logistic Regression: Logistic regression models are easier to interpret. Because they assign coefficients to predictor variables, they reveal not only which features factored most heavily into their final predictions, but also the directionality of the weight. In other words, they tell you if each feature is positively or negatively correlated with the target in the model's final prediction.
+* Ensemble and Sequential Learning: Tree-based model ensembles are often better predictors. If the most important thing is the predictive power of the model, then tree-based modeling will usually win out against logistic regression (but not always!). They also require much less data cleaning and require fewer assumptions about the underlying distributions of their predictor variables, so they're easier to work with.
+
+There are many ways this model can be improved. The most noteable is the testing of many more sets of hyperparameters for model tuning, as mentioned I was limited by the computing power of my laptop and was unable to test multiple different sets of hyperparameters to find the ideal set of hyperparameters for the model. Additionally, more features could be engineered to give the model better predictive power. As shown in the feature importance plot, 5 of the 8 most weight predictors were features that were engineered, thus, additional features could be engineered to further augment the models predictive power. The non-predictive features coulkd also be removed before model development to elimiate noise, which could further boost the models predictive power.
+
+The final item that could be looked at is what additional data could allow for better predictions from the model. It may be helpful to have drive-level information for each user (such as drive times, geographic locations, etc.). This information could uncover trends in the data that may not otherwise be seen with the current dataset. Additionally, it could be helpful to know the monthly count of unique starting and ending locations each driver inputs. If a user is continually driving to the same place, they may lose their need for the Waze naviagtion app once they become comfortable with the route. Users who are contiually driving to unique locations may reserve the need to keep using the app to assist with their navigation.
