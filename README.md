@@ -617,4 +617,81 @@ The main conclusion to take away from the development of the champion xgboost mo
 
 There are many ways this model can be improved. The most noteable is the testing of many more sets of hyperparameters for model tuning, as mentioned I was limited by the computing power of my laptop and was unable to test multiple different sets of hyperparameters to find the ideal set of hyperparameters for the model. Additionally, more features could be engineered to give the model better predictive power. As shown in the feature importance plot, 5 of the 8 most weight predictors were features that were engineered, thus, additional features could be engineered to further augment the models predictive power. The non-predictive features coulkd also be removed before model development to elimiate noise, which could further boost the models predictive power.
 
+## Appendix
+
+### Python Functions
+* `make_results`
+
+```
+def make_results(model_name:str, model_object, metric:str):
+    '''
+    Arguments:
+        model_name (string): what you want the model to be called in the output table
+        model_object: a fit GridSearchCV object
+        metric (string): precision, recall, f1, or accuracy
+
+    Returns a pandas df with the F1, recall, precision, and accuracy scores
+    for the model with the best mean 'metric' score across all validation folds.
+    '''
+
+  # Create dictionary that maps input metric to actual metric name in GridSearchCV
+    metric_dict = {'precision': 'mean_test_precision',
+                   'recall': 'mean_test_recall',
+                   'f1': 'mean_test_f1',
+                   'accuracy': 'mean_test_accuracy',
+                   }
+
+  # Get all the results from the CV and put them in a df
+    cv_results = pd.DataFrame(model_object.cv_results_)
+
+  # Isolate the row of the df with the max(metric) score
+    best_estimator_results = cv_results.iloc[cv_results[metric_dict[metric]].idxmax(), :]
+
+  # Extract Accuracy, precision, recall, and f1 score from that row
+    f1 = best_estimator_results.mean_test_f1
+    recall = best_estimator_results.mean_test_recall
+    precision = best_estimator_results.mean_test_precision
+    accuracy = best_estimator_results.mean_test_accuracy
+
+  # Create table of results
+    table = pd.DataFrame({
+      'Model': [model_name],
+      'F1': [f1],
+      'Recall': [recall],
+      'Precision': [precision],
+      'Accuracy': [accuracy]
+  })
+    return table
+```
+
+* `get_test_scores`
+
+```
+def get_test_scores(model_name:str, preds, y_test_data):
+    '''
+    Generate a table of test scores.
+
+    In:
+        model_name (string): Your choice: how the model will be named in the output table
+        preds: numpy array of test predictions
+        y_test_data: numpy array of y_test data
+
+    Out:
+        table: a pandas df of precision, recall, f1, and accuracy scores for your model
+    '''
+    accuracy = accuracy_score(y_test_data, preds)
+    precision = precision_score(y_test_data, preds)
+    recall = recall_score(y_test_data, preds)
+    f1 = f1_score(y_test_data, preds)
+
+    table = pd.DataFrame({'Model': [model_name],
+                          'Precision': [precision],
+                          'Recall': [recall],
+                          'F1': [f1],
+                          'Accuracy': [accuracy]
+                          })
+
+    return table
+```
+
 The final item that could be looked at is what additional data could allow for better predictions from the model. It may be helpful to have drive-level information for each user (such as drive times, geographic locations, etc.). This information could uncover trends in the data that may not otherwise be seen with the current dataset. Additionally, it could be helpful to know the monthly count of unique starting and ending locations each driver inputs. If a user is continually driving to the same place, they may lose their need for the Waze naviagtion app once they become comfortable with the route. Users who are contiually driving to unique locations may reserve the need to keep using the app to assist with their navigation.
