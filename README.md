@@ -617,6 +617,8 @@ The main conclusion to take away from the development of the champion xgboost mo
 
 There are many ways this model can be improved. The most noteable is the testing of many more sets of hyperparameters for model tuning, as mentioned I was limited by the computing power of my laptop and was unable to test multiple different sets of hyperparameters to find the ideal set of hyperparameters for the model. Additionally, more features could be engineered to give the model better predictive power. As shown in the feature importance plot, 5 of the 8 most weight predictors were features that were engineered, thus, additional features could be engineered to further augment the models predictive power. The non-predictive features coulkd also be removed before model development to elimiate noise, which could further boost the models predictive power.
 
+The final item that could be looked at is what additional data could allow for better predictions from the model. It may be helpful to have drive-level information for each user (such as drive times, geographic locations, etc.). This information could uncover trends in the data that may not otherwise be seen with the current dataset. Additionally, it could be helpful to know the monthly count of unique starting and ending locations each driver inputs. If a user is continually driving to the same place, they may lose their need for the Waze naviagtion app once they become comfortable with the route. Users who are contiually driving to unique locations may reserve the need to keep using the app to assist with their navigation.
+
 ## Appendix
 
 ### Python Functions
@@ -694,4 +696,4 @@ def get_test_scores(model_name:str, preds, y_test_data):
     return table
 ```
 
-The final item that could be looked at is what additional data could allow for better predictions from the model. It may be helpful to have drive-level information for each user (such as drive times, geographic locations, etc.). This information could uncover trends in the data that may not otherwise be seen with the current dataset. Additionally, it could be helpful to know the monthly count of unique starting and ending locations each driver inputs. If a user is continually driving to the same place, they may lose their need for the Waze naviagtion app once they become comfortable with the route. Users who are contiually driving to unique locations may reserve the need to keep using the app to assist with their navigation.
+
